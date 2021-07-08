@@ -1,0 +1,111 @@
+{
+  "name": "GoogleStorageIntermediateBucket",
+  "namespace": "Stanford\\GoogleStorageIntermediateBucket",
+  "description": "Allow file storage from REDCap projects to Google Cloud",
+  "versions": [
+    {
+      "0.1": "Initial"
+    }
+  ],
+  "authors": [
+    {
+      "name": "Andrew Martin",
+      "email": "andy123@stanford.edu",
+      "institution": "Stanford University"
+    },
+    {
+      "name": "Lee Ann Yasukawa",
+      "email": "yasukawa@stanfordhealthcare.org",
+      "institution": "Stanford Health Care"
+    },
+    {
+      "name": "Ihab Zeedia",
+      "email": "izeedia@stanfordhealthcare.org",
+      "institution": "Stanford Health Care"
+    }
+  ],
+  "permissions": [
+    "redcap_every_page_top"
+  ],
+  "links": {
+    "control-center": [
+    ],
+    "project": []
+  },
+  "no-auth-pages": [
+    "src/test"
+  ],
+  "system-settings": [
+    {
+      "key": "google-api-token",
+      "name": "<h5>Google Storage API Service Account. This will be used to any Google project using this EM. Researcher must give `Storage Admin` permission to defined SA. </h5>",
+      "required": true,
+      "type": "textarea"
+    },
+    {
+      "key": "rit-intermediate-project-id",
+      "name": "<h5>RIT intermediate Google Project ID</h5>",
+      "required": true,
+      "type": "text"
+    },
+    {
+      "key": "rit-intermediate-bucket",
+      "name": "<h5>RIT intermediate bucket</h5>",
+      "required": true,
+      "type": "text"
+    },
+    {
+      "key": "enable-system-debug-logging",
+      "name": "<b>Enable Debug Logging</b><br>If you have the Stanford emLogger external module installed and configured, you can enable additional debug-level logging through this checkbox</b>",
+      "required": false,
+      "type": "checkbox"
+    }
+  ],
+  "project-settings": [
+    {
+      "key": "google-project-id",
+      "name": "<h5>Google Storage Project ID</h5>",
+      "required": true,
+      "type": "text"
+    },
+    {
+      "key": "instance",
+      "name": "<b>Google Bucket Storage Instances</b>",
+      "required": true,
+      "type": "sub_settings",
+      "repeatable": true,
+      "sub_settings": [
+        {
+          "key": "google-storage-bucket",
+          "name": "<h5>Google Storage Bucket that will be used to save data</h5>",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "google-storage-bucket-prefix",
+          "name": "<h5>You can specify a prefix for all files in your bucket (Optional).</h5>",
+          "required": false,
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "key": "disable-file-link",
+      "name": "<b>Do not display link for uploaded file.</b>",
+      "required": false,
+      "type": "checkbox"
+    },
+    {
+      "key": "disable-auto-save",
+      "name": "<b>Prevent Auto-Save when file is uploaded.</b>",
+      "required": false,
+      "type": "checkbox"
+    },
+    {
+      "key": "enable-project-debug-logging",
+      "name": "<b>Enable Debug Logging</b>",
+      "required": false,
+      "type": "checkbox"
+    }
+  ]
+}
