@@ -1,4 +1,4 @@
-# Google Storage
+# Google Storage with Intermediate bucket
 
 This EM is spin off from original GoogleStorage EM which will upload files directly from REDCap user client directly to
 Google bucket. Some Google Projects have restricted security requirements that would force user to be on VPN to be able
