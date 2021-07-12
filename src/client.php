@@ -10,7 +10,7 @@ $this->emLog('inside src/client.php');
 </div>
 <!-- END Warning dialog -->
 
-<script src="<?php echo $this->getUrl('assets/js/client.js') ?>"></script>
+<script src="<?php echo $this->getUrl('assets/js/client.js', true, true) ?>"></script>
 <script>
     Client.fields = <?php echo json_encode($this->getFields()); ?>;
     Client.downloadLinks = <?php echo !is_null($this->getDownloadLinks()) ? json_encode($this->getDownloadLinks()) : []; ?>;
