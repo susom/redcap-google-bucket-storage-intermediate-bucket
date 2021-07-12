@@ -264,7 +264,7 @@ class GoogleStorageIntermediateBucket extends \ExternalModules\AbstractExternalM
     public function redcap_every_page_top()
     {
         try {
-            $this->setIsSurvey(preg_match("/surveys\/\?s=[a-zA-Z0-9]{10}/m", $_SERVER['REQUEST_URI']));
+            $this->setIsSurvey(preg_match("/\?s=[a-zA-Z0-9]{16}/m", $_SERVER['REQUEST_URI']));
             // in case we are loading record homepage load its the record children if existed
             if ((strpos($_SERVER['SCRIPT_NAME'], 'DataEntry/index.php') !== false || $this->isSurvey()) && $this->getFields()) {
 
