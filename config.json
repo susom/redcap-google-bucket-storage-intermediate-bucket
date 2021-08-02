@@ -85,7 +85,7 @@
         },
         {
           "key": "google-storage-bucket-prefix",
-          "name": "<h5>You can specify a prefix for all files in your bucket (Optional).</h5>",
+          "name": "<h5>Fallback folder name that can be overridden by field Action Tag(Optional).</h5>",
           "required": false,
           "type": "text"
         }

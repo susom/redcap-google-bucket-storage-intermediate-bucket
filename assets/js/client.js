@@ -13,8 +13,24 @@ Client = {
     isSurvey: false,
     isLinkDisabled: false,
     isAutoSaveDisabled: false,
+    isDirty: false,
+    tempDataEntrySubmit: null,
     init: function () {
 
+        Client.tempDataEntrySubmit = dataEntrySubmit;
+
+        window.dataEntrySubmit = function (e) {
+
+            if (Client.isDirty) {
+                Client.submitWarningDialog();
+                $("button[name='submit-btn-saverecord']").removeAttr('disabled').removeClass('ui-button-disabled').removeClass('ui-state-disabled');
+                return false;
+            } else {
+                Client.tempDataEntrySubmit.apply(this, arguments);
+            }
+            // do what you need to do in the event listener here
+
+        }
         // test builder
         Client.removeAutoParam()
         // with ajax disable all submit buttons till ajax is completed
@@ -79,7 +95,7 @@ Client = {
                     // change few parameter to let redcap save existing record
                     record_exists = 1;
                     $('input[name ="hidden_edit_flag"]').val(1);
-
+                    Client.isDirty = false
                 }
             },
             complete: function () {
@@ -139,7 +155,21 @@ Client = {
         }
     },
     uploadDialog: function (path) {
-        $("#uploaded-file-name").text(path);
+        $("#upload-dialog").html('File <strong>' + path + '</strong> Uploaded successfully');
+        $('#upload-dialog').dialog({
+            bgiframe: true, modal: true, width: 400, position: ['center', 20],
+            open: function () {
+                fitDialog(this);
+            },
+            buttons: {
+                Close: function () {
+                    $(this).dialog('close');
+                }
+            }
+        });
+    },
+    submitWarningDialog: function () {
+        $("#upload-dialog").text('You cant submit while upload in progress. You can cencel upload or wait till completes. ');
         $('#upload-dialog').dialog({
             bgiframe: true, modal: true, width: 400, position: ['center', 20],
             open: function () {
@@ -194,6 +224,7 @@ Client = {
             success: function (data) {
                 var response = JSON.parse(data)
                 if (response.status === 'success') {
+                    Client.isDirty = true
                     Client.uploadFile(response.url, type, file, response.path, field)
                 }
             },
