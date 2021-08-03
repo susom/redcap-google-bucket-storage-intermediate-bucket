@@ -45,5 +45,11 @@ intermediate open bucket then REDCap server will move these files into the more 
 
 1. Create new text form field.
 2. In Action Tags/Field Annotation box add following `@GOOGLE-STORAGE=[YOUR_BUCKET_NAME]`
+3. Optional: You can override files prefix defined in EM settings. There are two ways to override the prefix. First you
+   can add actual folder name `@GOOGLE-STORAGE=[YOUR_BUCKET_NAME]/[FOLDER_NAME]`. Second you can use REDCap smart
+   variables to customize the prefix based on user selections from
+   dropdowns `@GOOGLE-STORAGE=[YOUR_BUCKET_NAME]/[REDCAP_FIELD_NAME_1]/[REDCAP_FIELD_NAME_2]`.
 
+**Note: if you using smart variables these variables MUST be dropdowns for user to pick from. EM does not support text
+input fields. Also make sure the prefix is defined as the option value not the label `stude_1, Study 1`**
 ![Alt text](assets/images/redcap-field-config.png?raw=true "REDCap Field Config")
