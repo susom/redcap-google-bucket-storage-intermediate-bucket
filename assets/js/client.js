@@ -15,7 +15,7 @@ Client = {
     isAutoSaveDisabled: false,
     isDirty: false,
     tempDataEntrySubmit: null,
-    smartVariableRegex: '^\[.*\]$',
+    smartVariableRegex: '^\\[.*\\]$',
     init: function () {
 
         Client.tempDataEntrySubmit = dataEntrySubmit;
@@ -57,12 +57,13 @@ Client = {
             if ($(this).data('prefix-has-smart-variables') === true) {
                 prefix = Client.prepareUploadPrefix(prefix);
                 if (prefix === false) {
+                    $(this).val('')
                     return false;
                 }
             }
 
             for (var i = 0; i < files.length; i++) {
-                Client.getSignedURL(files[i].type, files[i].name, field, files[i], bucket, prefix)
+                //Client.getSignedURL(files[i].type, files[i].name, field, files[i], bucket, prefix)
             }
 
             //Client.getSignedURL(file[0].type, file[0].name, field)
@@ -84,7 +85,7 @@ Client = {
             if (p.search(Client.smartVariableRegex) > -1) {
                 var v = Client.getSmartVariableValue(p)
                 if (v == '' || v == undefined) {
-                    Client.showWarningDialog(r + ' field is required to upload files');
+                    Client.showWarningDialog(p + ' field is required to upload files');
                     return false;
                 }
                 Client.lockField(p)
