@@ -63,7 +63,7 @@ Client = {
             }
 
             for (var i = 0; i < files.length; i++) {
-                //Client.getSignedURL(files[i].type, files[i].name, field, files[i], bucket, prefix)
+                Client.getSignedURL(files[i].type, files[i].name, field, files[i], bucket, prefix)
             }
 
             //Client.getSignedURL(file[0].type, file[0].name, field)
