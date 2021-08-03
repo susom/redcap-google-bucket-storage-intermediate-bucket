@@ -170,11 +170,16 @@ class GoogleStorageIntermediateBucket extends \ExternalModules\AbstractExternalM
         }
     }
 
+    private function getBucketNameFromActionTag($actionTag)
+    {
+        $parts = explode('/', $actionTag);
+        return $parts[0];
+    }
+
     private function copyObjectToNeroBucket()
     {
         $currentField = filter_var($_POST['current_field'], FILTER_SANITIZE_STRING);
         $destinationBucket = $this->getBucketName($currentField);
-
         $objectName = filter_var($_POST['current_path'], FILTER_SANITIZE_STRING);
         $bucket = $this->getRitIntermediateBucket();
         $object = $bucket->object($objectName);
@@ -421,13 +426,13 @@ class GoogleStorageIntermediateBucket extends \ExternalModules\AbstractExternalM
      */
     public function getBucket($fieldName)
     {
-        $bucketName = $this->getFields()[$fieldName];
+        $bucketName = $this->getBucketName($fieldName);
         return $this->getBuckets()[$bucketName];
     }
 
     public function getBucketName($fieldName)
     {
-        return $this->getFields()[$fieldName];
+        return $this->getBucketNameFromActionTag($this->getFields()[$fieldName]);
     }
 
     /**
@@ -437,7 +442,12 @@ class GoogleStorageIntermediateBucket extends \ExternalModules\AbstractExternalM
     public function getFieldBucketPrefix($fieldName)
     {
         $bucketName = $this->getFields()[$fieldName];
-        return $this->getBucketPrefix()[$bucketName];
+        $parts = explode('/', $bucketName);
+        if (count($parts) > 1) {
+            unset($parts[0]);
+            return implode('/', $parts);
+        }
+        return $this->getBucketPrefix()[$parts[0]];
     }
 
     /**

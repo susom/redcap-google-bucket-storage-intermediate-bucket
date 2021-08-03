@@ -13,8 +13,27 @@ Client = {
     isSurvey: false,
     isLinkDisabled: false,
     isAutoSaveDisabled: false,
+    isDirty: false,
+    tempDataEntrySubmit: null,
+    smartVariableRegex: '^\[.*\]$',
     init: function () {
 
+        Client.tempDataEntrySubmit = dataEntrySubmit;
+
+
+        // override form/survey submit function while upload is in progress.
+        window.dataEntrySubmit = function (e) {
+
+            if (Client.isDirty) {
+                Client.submitWarningDialog();
+                $("button[name='submit-btn-saverecord']").removeAttr('disabled').removeClass('ui-button-disabled').removeClass('ui-state-disabled');
+                return false;
+            } else {
+                Client.tempDataEntrySubmit.apply(this, arguments);
+            }
+            // do what you need to do in the event listener here
+
+        }
         // test builder
         Client.removeAutoParam()
         // with ajax disable all submit buttons till ajax is completed
@@ -31,9 +50,19 @@ Client = {
         $(".google-storage-field").on('change', function () {
             var files = $(this).prop("files")
             var field = $(this).data('field')
+            var prefix = $(this).data('prefix')
+            var bucket = $(this).data('bucket')
             Client.form = $(this).parents('form:first');
+
+            if ($(this).data('prefix-has-smart-variables') === true) {
+                prefix = Client.prepareUploadPrefix(prefix);
+                if (prefix === false) {
+                    return false;
+                }
+            }
+
             for (var i = 0; i < files.length; i++) {
-                Client.getSignedURL(files[i].type, files[i].name, field, files[i])
+                Client.getSignedURL(files[i].type, files[i].name, field, files[i], bucket, prefix)
             }
 
             //Client.getSignedURL(file[0].type, file[0].name, field)
@@ -46,6 +75,34 @@ Client = {
             var id = $(this).data('file-id')
             Client.getDownloadSignedURL(fieldName, fileName, id)
         })
+    },
+    prepareUploadPrefix: function (prefix) {
+        var parts = prefix.split("/");
+        var result = ''
+        for (var i = 0; i < parts.length; i++) {
+            var p = parts[i];
+            if (p.search(Client.smartVariableRegex) > -1) {
+                var v = Client.getSmartVariableValue(p)
+                if (v == '' || v == undefined) {
+                    Client.showWarningDialog(r + ' field is required to upload files');
+                    return false;
+                }
+                Client.lockField(p)
+                result += v + "/";
+            }
+        }
+
+        r = result.slice(0, -1)
+        return r
+    },
+    getSmartVariableValue: function (variable) {
+        var r = Client.removeSquareBrackets(variable)
+        var v = jQuery("select[name=" + r + "] :selected").val();
+        return v;
+    },
+    removeSquareBrackets: function (variable) {
+        var result = variable.slice(1, -1)
+        return result
     },
     // we want to remove this param so after on save record in saves to correct record id.
     removeAutoParam: function () {
@@ -79,14 +136,14 @@ Client = {
                     // change few parameter to let redcap save existing record
                     record_exists = 1;
                     $('input[name ="hidden_edit_flag"]').val(1);
-
+                    Client.isDirty = false
                 }
             },
             complete: function () {
                 $(".btn-primaryrc").removeAttr('disabled')
             },
             error: function (request, error) {
-                alert("Request: " + JSON.stringify(request));
+                Client.showWarningDialog("Request: " + JSON.stringify(request));
             }
         });
     },
@@ -130,7 +187,8 @@ Client = {
             }
             // only add form in the first time.
             if (path === undefined) {
-                $('<form class="google-storage-form" enctype="multipart/form-data"><input multiple class="google-storage-field" name="file" data-field="' + prop + '" type="file"/></form>').insertAfter($elem)
+
+                $('<form class="google-storage-form" enctype="multipart/form-data"><input multiple class="google-storage-field" name="file" data-field="' + prop + '" data-bucket="' + Client.getBucketName(Client.fields[prop]) + '" data-prefix="' + Client.getFieldPrefix(Client.fields[prop]) + '"  data-prefix-has-smart-variables="' + Client.fieldHasSmartVariables(Client.fields[prop]) + '" type="file"/></form>').insertAfter($elem)
             }
 
             if (path !== undefined) {
@@ -138,8 +196,61 @@ Client = {
             }
         }
     },
+    getBucketName: function (field) {
+        if (typeof field !== 'string') {
+            Client.showWarningDialog('EM is miss configured. Please check with Project with Admin');
+            return false;
+        }
+        var parts = field.split('/');
+        return parts[0];
+    },
+    getFieldPrefix: function (field) {
+        if (typeof field !== 'string') {
+            Client.showWarningDialog('EM is miss configured. Please check with Project with Admin');
+            return false;
+        }
+        var parts = field.split('/');
+        // remove first element which represent the bucket name
+        parts.shift();
+        return parts.join('/')
+    },
+    fieldHasSmartVariables(field) {
+
+        if (typeof field !== 'string') {
+            Client.showWarningDialog('EM is miss configured. Please check with Project with Admin');
+            return false;
+        }
+        var parts = field.split('/');
+        // remove first element which represent the bucket name
+        parts.shift();
+        var hasSmartVar = false;
+        for (var i = 0; i < parts.length; i++) {
+            var p = parts[i];
+
+            if (p.search(Client.smartVariableRegex) > -1) {
+                var v = Client.getSmartVariableValue(p);
+                // when record is saved and smart variable has value then lock it so it cant be changed.
+                if (v != '') {
+                    Client.lockField(p)
+                }
+                hasSmartVar = true
+            }
+        }
+
+        return hasSmartVar;
+    },
+    lockField: function (variable) {
+        var r = Client.removeSquareBrackets(variable)
+        $("select[name=" + r + "]").attr('disabled', 'disabled');
+    },
     uploadDialog: function (path) {
-        $("#uploaded-file-name").text(path);
+        Client.showWarningDialog('File <strong>' + path + '</strong> Uploaded successfully');
+    },
+    submitWarningDialog: function () {
+        Client.showWarningDialog('You cant submit while upload in progress. You can cencel upload or wait till completes. ');
+    },
+    showWarningDialog: function (text) {
+        $("#upload-dialog").html(text);
         $('#upload-dialog').dialog({
             bgiframe: true, modal: true, width: 400, position: ['center', 20],
             open: function () {
@@ -175,7 +286,7 @@ Client = {
             }
         });
     },
-    getSignedURL: function (type, name, field, file) {
+    getSignedURL: function (type, name, field, file, bucket, prefix) {
         $.ajax({
             // Your server script to process the upload
             url: Client.getSignedURLAjax,
@@ -189,11 +300,14 @@ Client = {
                 'record_id': Client.recordId,
                 'event_id': Client.eventId,
                 'instance_id': Client.instanceId,
+                'bucket': bucket,
+                'file_prefix': prefix,
                 'action': 'upload'
             },
             success: function (data) {
                 var response = JSON.parse(data)
                 if (response.status === 'success') {
+                    Client.isDirty = true
                     Client.uploadFile(response.url, type, file, response.path, field)
                 }
             },

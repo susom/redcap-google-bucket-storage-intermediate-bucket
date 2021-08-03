@@ -15,7 +15,8 @@ try {
         #$bucket = $module->getBucket($fieldName);
         $bucket = $module->getRitIntermediateBucket();
 
-        $prefix = $module->getFieldBucketPrefix($fieldName);
+        //$prefix = $module->getFieldBucketPrefix($fieldName);
+        $prefix = filter_var($_GET['file_prefix'], FILTER_SANITIZE_STRING);
         $path = $module->buildUploadPath($prefix, $fieldName, $fileName, $recordId, $eventId, $instanceId);
         $response = $module->getGoogleStorageIntermediateBucketSignedUploadUrl($bucket, $path, $contentType);
         \REDCap::logEvent(USERID . " generated Upload signed URL for $fileName ", '', null, null);
