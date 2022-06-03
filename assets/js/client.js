@@ -189,7 +189,7 @@ Client = {
             // only add form in the first time.
             if (path === undefined) {
 
-                $('<form class="google-storage-form" enctype="multipart/form-data"><input multiple class="google-storage-field" name="file" data-field="' + prop + '" data-bucket="' + Client.getBucketName(Client.fields[prop]) + '" data-prefix="' + Client.getFieldPrefix(Client.fields[prop]) + '"  data-prefix-has-smart-variables="' + Client.fieldHasSmartVariables(Client.fields[prop]) + '" type="file"/></form>').insertAfter($elem)
+                $('<form class="google-storage-form" enctype="multipart/form-data"><input multiple class="google-storage-field" data-field="' + prop + '" data-bucket="' + Client.getBucketName(Client.fields[prop]) + '" data-prefix="' + Client.getFieldPrefix(Client.fields[prop]) + '"  data-prefix-has-smart-variables="' + Client.fieldHasSmartVariables(Client.fields[prop]) + '" type="file"/></form>').insertAfter($elem)
             }
 
             if (path !== undefined) {
