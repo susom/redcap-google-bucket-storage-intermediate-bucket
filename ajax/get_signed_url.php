@@ -19,14 +19,14 @@ try {
         $prefix = filter_var($_GET['file_prefix'], FILTER_SANITIZE_STRING);
         $path = $module->buildUploadPath($prefix, $fieldName, $fileName, $recordId, $eventId, $instanceId);
         $response = $module->getGoogleStorageIntermediateBucketSignedUploadUrl($bucket, $path, $contentType);
-        \REDCap::logEvent(USERID . " generated Upload signed URL for $fileName ", '', null, null);
+        \REDCap::logEvent(defined('USERID')?USERID:'No-Auth' . " generated Upload signed URL for $fileName ", '', null, null);
         echo json_encode(array('status' => 'success', 'url' => $response, 'path' => $path));
     } elseif (isset($_GET['action']) && $_GET['action'] == 'download') {
         $fileName = filter_var($_GET['file_name'], FILTER_SANITIZE_STRING);
         $fieldName = filter_var($_GET['field_name'], FILTER_SANITIZE_STRING);
         $bucket = $module->getBucket($fieldName);
         $link = $module->getGoogleStorageIntermediateBucketSignedUrl($bucket, trim($fileName));
-        \REDCap::logEvent(USERID . " generated Download signed URL for $fileName ", '', null, null);
+        \REDCap::logEvent(defined('USERID')?USERID:'No-Auth' . " generated Download signed URL for $fileName ", '', null, null);
 
         echo json_encode(array('status' => 'success', 'link' => $link));
     } else {
