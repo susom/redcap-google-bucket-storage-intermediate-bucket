@@ -210,7 +210,7 @@ class GoogleStorageIntermediateBucket extends \ExternalModules\AbstractExternalM
             $this->copyObjectToNeroBucket();
             $this->setRecord();
             $this->prepareDownloadLinks();
-            $this->uploadLogFile(USERID, $this->getCustomRecordId(), $data['redcap_event_name'], $field, $filesPath);
+            $this->uploadLogFile(isset($_SERVER['REMOTE_USER']) ? $_SERVER['REMOTE_USER']: 'unknown' , $this->getCustomRecordId(), $data['redcap_event_name'], $field, $filesPath);
             return array('status' => 'success', 'links' => $this->getDownloadLinks());
         } else {
             if (is_array($response['errors'])) {
