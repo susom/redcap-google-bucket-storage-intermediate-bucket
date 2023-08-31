@@ -189,8 +189,8 @@ class GoogleStorageIntermediateBucket extends \ExternalModules\AbstractExternalM
 
     public function saveRecord()
     {
-        $this->setRecordId(filter_var($_POST['record_id'], FILTER_SANITIZE_STRING));
-        $data[\REDCap::getRecordIdField()] = $this->getRecordId();
+        $this->setRecordId(htmlspecialchars($_POST['record_id']));
+        $data[\REDCap::getRecordIdField()] = $this->getCustomRecordId();
         $filesPath = json_decode($_POST['files_path'], true);
         foreach ($filesPath as $field => $item) {
             $data[$field] = $item;
@@ -210,7 +210,7 @@ class GoogleStorageIntermediateBucket extends \ExternalModules\AbstractExternalM
             $this->copyObjectToNeroBucket();
             $this->setRecord();
             $this->prepareDownloadLinks();
-            $this->uploadLogFile(USERID, $this->getRecordId(), $data['redcap_event_name'], $field, $filesPath);
+            $this->uploadLogFile(USERID, $this->getCustomRecordId(), $data['redcap_event_name'], $field, $filesPath);
             return array('status' => 'success', 'links' => $this->getDownloadLinks());
         } else {
             if (is_array($response['errors'])) {
@@ -328,8 +328,8 @@ class GoogleStorageIntermediateBucket extends \ExternalModules\AbstractExternalM
         $links = array();
         $filesPath = array();
         foreach ($this->getFields() as $field => $bucket) {
-            if ($record[$this->getRecordId()][$this->getEventId()][$field] != '') {
-                $files = explode(",", $record[$this->getRecordId()][$this->getEventId()][$field]);
+            if ($record[$this->getCustomRecordId()][$this->getEventId()][$field] != '') {
+                $files = explode(",", $record[$this->getCustomRecordId()][$this->getEventId()][$field]);
                 $bucket = $this->getBucket($field);
 
                 if (!empty($field)) {
@@ -517,7 +517,7 @@ class GoogleStorageIntermediateBucket extends \ExternalModules\AbstractExternalM
     /**
      * @return string
      */
-    public function getRecordId()
+    public function getCustomRecordId()
     {
         return $this->recordId;
     }
@@ -581,7 +581,7 @@ class GoogleStorageIntermediateBucket extends \ExternalModules\AbstractExternalM
             'project_id' => $this->getProjectId(),
             'return_format' => 'array',
             'events' => $this->getEventId(),
-            'records' => [$this->getRecordId()]
+            'records' => [$this->getCustomRecordId()]
         );
         $data = array();
         $record = \REDCap::getData($param);
