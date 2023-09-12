@@ -41,7 +41,7 @@
     {
       "key": "google-api-token",
       "name": "<h5>Google Storage API Service Account. This will be used to any Google project using this EM. Researcher must give `Storage Admin` permission to defined SA. </h5>",
-      "required": true,
+      "required": false,
       "type": "textarea"
     },
     {

@@ -90,7 +90,7 @@ class GoogleStorageIntermediateBucket extends \ExternalModules\AbstractExternalM
         try {
             parent::__construct();
 
-            if (isset($_GET['pid']) && $this->getSystemSetting('google-api-token') != '' && $this->getProjectSetting('google-project-id') != '') {
+            if (isset($_GET['pid'])  && $this->getProjectSetting('google-project-id') != '') {
                 $this->setInstances();
 
                 global $Proj;
@@ -99,11 +99,16 @@ class GoogleStorageIntermediateBucket extends \ExternalModules\AbstractExternalM
 
                 $this->prepareGoogleStorageIntermediateBucketFields();
                 //RIT intermediate client.
-                $this->setClient(new StorageClient(['keyFile' => json_decode($this->getSystemSetting('google-api-token'), true), 'projectId' => $this->getSystemSetting('rit-intermediate-project-id')]));
+                $config['project_id'] =  $this->getSystemSetting('rit-intermediate-project-id');
+
+                if($this->getSystemSetting('google-api-token')){
+                    $config['keyFile'] = json_decode($this->getSystemSetting('google-api-token'));
+                }
+                $this->setClient(new StorageClient($config));
 
 
                 //Nero Client. will be used by redcap only. we are defining the client based on user Google project. SA defined in settings config must have Storage admin permission enabled in project defined by user.
-                $this->setNeroClient(new StorageClient(['keyFile' => json_decode($this->getSystemSetting('google-api-token'), true), 'projectId' => $this->getProjectSetting('google-project-id')]));
+                $this->setNeroClient(new StorageClient($config));
 
                 if (!empty($this->getInstances())) {
                     $buckets = array();
