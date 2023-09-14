@@ -102,7 +102,7 @@ class GoogleStorageIntermediateBucket extends \ExternalModules\AbstractExternalM
                 $config['project_id'] =  $this->getSystemSetting('rit-intermediate-project-id');
 
                 if($this->getSystemSetting('google-api-token')){
-                    $config['keyFile'] = json_decode($this->getSystemSetting('google-api-token'));
+                    $config['keyFile'] = json_decode($this->getSystemSetting('google-api-token'), true);
                 }
                 $this->setClient(new StorageClient($config));
 
@@ -188,7 +188,7 @@ class GoogleStorageIntermediateBucket extends \ExternalModules\AbstractExternalM
         $objectName = filter_var($_POST['current_path'], FILTER_SANITIZE_STRING);
         $bucket = $this->getRitIntermediateBucket();
         $object = $bucket->object($objectName);
-        $object->copy($destinationBucket);
+        $object->rewrite($destinationBucket);
         $object->delete();
     }
 

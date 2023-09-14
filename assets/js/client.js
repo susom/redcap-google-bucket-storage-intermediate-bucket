@@ -248,7 +248,7 @@ Client = {
         Client.showWarningDialog('File <strong>' + path + '</strong> Uploaded successfully');
     },
     submitWarningDialog: function () {
-        Client.showWarningDialog('You cant submit while upload in progress. You can cencel upload or wait till completes. ');
+        Client.showWarningDialog('You cant submit while upload in progress. You can cancel upload or wait till completes. ');
     },
     showWarningDialog: function (text) {
         $("#upload-dialog").html(text);
