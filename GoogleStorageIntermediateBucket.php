@@ -195,6 +195,7 @@ class GoogleStorageIntermediateBucket extends \ExternalModules\AbstractExternalM
     public function saveRecord()
     {
         $this->setRecordId(htmlspecialchars($_POST['record_id']));
+        $this->emDebug("Record Id: " . $this->getRecordId());
         $data[\REDCap::getRecordIdField()] = $this->getCustomRecordId();
         $filesPath = json_decode($_POST['files_path'], true);
         foreach ($filesPath as $field => $item) {
@@ -210,7 +211,11 @@ class GoogleStorageIntermediateBucket extends \ExternalModules\AbstractExternalM
             $data['redcap_repeat_instrument'] = $form;
         }
 
+        $this->emDebug("Saved Data");
+        $this->emDebug($data);
         $response = \REDCap::saveData($this->getProjectId(), 'json', json_encode(array($data)));
+        $this->emDebug("Save Response");
+        $this->emDebug($response);
         if (empty($response['errors'])) {
             $this->copyObjectToNeroBucket();
             $this->setRecord();
