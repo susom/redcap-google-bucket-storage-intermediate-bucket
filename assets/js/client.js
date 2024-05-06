@@ -15,6 +15,7 @@ Client = {
     isAutoSaveDisabled: false,
     isDirty: false,
     tempDataEntrySubmit: null,
+    csrfToken: '',
     smartVariableRegex: '^\\[.*\\]$',
     init: function () {
 
@@ -126,7 +127,8 @@ Client = {
                 'instance_id': Client.instanceId,
                 'files_path': JSON.stringify(Client.filesPath),
                 'current_path': path,
-                'current_field': field !== undefined ? field : ''
+                'current_field': field !== undefined ? field : '',
+                'redcap_csrf_token': Client.csrfToken
             },
             success: function (data) {
                 var response = JSON.parse(data)

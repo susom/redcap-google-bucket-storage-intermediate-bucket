@@ -23,6 +23,7 @@ $this->emLog('inside src/client.php');
     Client.isSurvey = "<?php echo $this->isSurvey() ? true : false ?>"
     Client.isAutoSaveDisabled = "<?php echo $this->isAutoSaveDisabled() ? true : false ?>"
     Client.isLinkDisabled = "<?php echo $this->isLinksDisabled() ?>"
+    Client.csrfToken = "<?php echo \System::getCsrfToken() ?>"
     window.onload = setTimeout(function () {
         Client.init();
     }, 500)
